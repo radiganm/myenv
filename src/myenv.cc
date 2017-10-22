@@ -123,7 +123,7 @@
           ctokens[k] = strdup(const_cast<char *>(token.c_str()));
           k++;
         }
-        ctokens[k] = nullptr;
+        ctokens[k] = nullptr; 
         return ctokens;              
       }
   };
@@ -132,6 +132,24 @@
   {
     std::getline(is, o, delimiter);
     return is;
+  }
+
+  static char* const* cappend(char* const* list, char *s)
+  {
+    std::size_t n = 0;
+    pcstr_range_t list_range(list);
+    for(const auto env : list_range) n++;
+    char** ctokens = new char*[n+1];
+    std::size_t k = 0;
+    for(const auto env : list_range)
+    {
+      ctokens[k] = strdup(env);
+      k++;
+    }
+    ctokens[k] = strdup(s);
+    k++;
+    ctokens[k] = nullptr; 
+    return ctokens;              
   }
 
   enum Status : uint32_t
@@ -170,8 +188,9 @@
     else if(0 == std::string(argv[1]).find("-- "))
     {
       char* const* tokens = Tokenizer<' '>::csplit(argv[1]);
-      const char* const &prog = tokens[1];
-      char* const* args = &tokens[1];
+      char* const* list = cappend(tokens, argv[2]);
+      const char* const &prog = list[1];
+      char* const* args = &list[1];
       execvp(prog, args);
       status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
     }
