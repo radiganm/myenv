@@ -171,7 +171,7 @@
     {
       char* const* tokens = Tokenizer<' '>::csplit(argv[1]);
       const char* const &prog = tokens[1];
-      char* const* args = &tokens[2];
+      char* const* args = &tokens[1];
       execvp(prog, args);
       status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
     }
